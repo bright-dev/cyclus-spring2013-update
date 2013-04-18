@@ -1210,10 +1210,6 @@ div.output_prompt {
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s">&#39;serif&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="c">#import bright</span>
-<span class="c">#from bright.fast_reactor1g import FastReactor1G</span>
-<span class="c">#fr = FastReactor1G(bright.bright_conf.BRIGHT_DATA + &#39;/FR.h5&#39;)</span>
 </pre></div>
 
 </div>
@@ -1341,6 +1337,129 @@ PU246  0.0
 </section>
 <section>
 <div class="text_cell_render border-box-sizing rendered_html">
+<div style="text-align:center"><h1>Current Status</h1></div>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Cyclus API Evolution</h2>
+<ul>
+<li>The Cyclus API has changed significantly since the begining of the this NEUP and has further changes in the pipeline.</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<div style="text-align:center;">This is a generally a good thing.</div>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>However, it poses technical and maintaince challenges for Bright to target a currently evolving front-end.</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<p>To mitigate these challenges, Bright adopted an automatic binding generation strategy.  This minimizes the effort needed to update to new front end APIs for an entire code base.</p>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<div style="text-align:right;font-weight:bold;">However, code generation is generally useful.</div>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Enter: xdress</h2>
+<p><a href="https://s3.amazonaws.com/xdress/index.html">website:</a></p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="text-align:center;"><iframe src=https://s3.amazonaws.com/xdress/index.html?useformat=mobile width=600 height=400></iframe></div>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Why XDress?</h2>
+<ul>
+<li>XDress is the current way that Bright generates its Python interface.</li>
+<li>Once there is one C++ auto-wrapper, it is easy to build other code generators.</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>The xdress type system natively addresses V&amp;V concerns important to computational science.<ul>
+<li>Other auto-wrapping technologies miss this in a big way.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>This enables the imminent cyclus bindings to be as robust as possible.</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>A talk on Bright &amp; xdress has been accepted to GLOBAL 2013, entitled "<em>A Dynamic, Dependent Type System for Nuclear Fuel Cycle Code Generation</em>."</li>
+</ul>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>A Taste of the Type System</h2>
+<pre><code># Base type are just their names
+'str'
+'float64'
+
+# Aliases may also be used
+'f4'     # -&gt; 'float32'
+
+# Length-1 tuples expand to have scalar predicates
+('int32',)  # -&gt; ('int32', 0)
+
+# Refinement types may be listed by name only
+'posint'  # -&gt; ('int32', 'posint')
+
+# Templates are given within tuples
+('map', 'i4', 'float')
+
+# As are dependencies values
+('range', 'int32', 1, 42)
+
+# And any combination of the above!
+(('map', 'posint', ('set', ('intrange', 1, 42))),)
+</code></pre>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Why Release XDress Independently of Bright?</h2>
+<ul>
+<li>It fills a niche.</li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<p><br/>
+<table id="modapptable" class="tftable" border="1" style="width:400px;">
+<tr><th>Project</th><th>GitHub Stars (2013-04-18)</th></tr>
+<tr><td style="text-align:left;"><b>Cyclus Core</b></td><td>14</td></tr>
+<tr><td style="text-align:left;"><b>XDress</b></td><td>13</td></tr>
+<tr><td style="text-align:left;"><b>Bright</b></td><td>5</td></tr>
+<tr><td style="text-align:left;"><b>PyNE</b></td><td>16</td></tr>
+<tr><td style="text-align:left;"><b>OpenMC</b></td><td>16</td></tr>
+</table></p>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<br/>
+
+<ul>
+<li>Useful in non-Bright projects, i.e. PyNE and Cyclus (see <a href="https://github.com/cyclus/cycamore/issues/36">cyclus/cycamore#36</a>). </li>
+</ul>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<br/>
+
+<ul>
+<li>I was asked to at PyCon 2013.</li>
+</ul>
+</div>
+</section>
+<section>
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2>ENDF Reader</h2>
 <ul>
 <li>Precomputing cross-sections or computing them on-the-fly is useful</li>
@@ -1365,12 +1484,14 @@ PU246  0.0
 </section>
 <section>
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2>As an end user</h2>
+<h2>As a Cyclus End User &amp; Third Party Developer</h2>
+<p>I am excited for the day when I can get Bright-Cyclus integration fully opperational!</p>
 </div>
-</section>
-<section>
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2>As a developer</h2>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<p>We are all going to the same place, so let's make the tools as good as possible.</p>
+</div>
+<div class="fragment text_cell_render border-box-sizing rendered_html">
+<p>I continue to try to bring to the fore outstanding issues and pain points I find in the Cycus ecosystem.</p>
 </div>
 </section>
 <section>
@@ -1384,16 +1505,12 @@ PU246  0.0
 <h2>References</h2>
 <ol>
 <li>Anthony M. Scopatz and Erich a. Schneider. “A new method for rapid computation of transient fuel cycle material balances”. In: Nuclear Engineering and Design 239.10 (Oct. 2009), pp. 2169–2184. ISSN: 00295493. DOI: 10.1016/j.nucengdes.2009.02.022. URL: http://linkinghub.elsevier.com/retrieve/pii/S0029549309000922</li>
-<li>M Takano. Burnup Credit Criticality Benchmark - Result of Phase 1A - NEA/NSC/DOC(93)22. Tech. rep. January. Nuclear Energy Agency, 1994, pp. 1–147</li>
-<li>OECD. Advanced Nuclear Fuel Cycles and Radioactive Waste Management - NEA-5990. Tech. rep. Nuclear Energy Agency, 2006, pp. 1–248</li>
 <li>Nuclear Energy Data Files. Los Alamos National Laboratory - Theoretical Nuclear Physics. 2009. URL: http://t2.lanl.gov/data/data.html</li>
-<li>Jaakko Lepp. PSG2 / Serpent âA ̧ a Continuous-energy Monte Carlo Reactor Physics Burnup Calculation Code. Tech. rep. 2011, p. 157</li>
-<li>A G Croff. ORIGEN 2.2 - CCC-371. Tech. rep. Oak Ridge National Laboratory, 2002, pp. 1–222</li>
 </ol>
 </div>
 <div style=display:none class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="input_area box-flex1">
 <div class="highlight"><pre><span class="o">!</span>make
 </pre></div>
